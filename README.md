@@ -1,117 +1,69 @@
-Berikut adalah draf file `README.md` yang lengkap, terstruktur, dan profesional untuk repositori GitHub proyek UTS Graph Analytics ini:
+# E-Commerce Graph Recommendation System (RetailRocket)
 
-```markdown
-# 🛒 RetailRocket Graph Analytics & Recommendation System
+Proyek ini mengimplementasikan sistem rekomendasi produk berbasis graf (Graph-Based Recommender System) menggunakan dataset RetailRocket, Neo4j, dan Python. Pendekatan yang digunakan adalah Item-Based Collaborative Filtering dengan pemodelan ruang vektor (Vector Space Modelling) dan algoritma k-Nearest Neighbors (k-NN).
 
-Proyek ini berfokus pada pembangunan database graf, analisis jaringan interaksi e-commerce, serta implementasi sistem rekomendasi produk (*Item-based Collaborative Filtering*) menggunakan **Neo4j**, **Python**, dan dataset **RetailRocket**.
+## Ringkasan Proyek
 
----
+Sistem ini mentransformasikan data transaksi dan interaksi pengguna e-commerce dari bentuk relasional/tabular menjadi struktur graf unipartit dan bipartite. Melalui proyeksi ini, dilakukan perhitungan kesamaan produk (Cosine Similarity) yang dituliskan kembali (write-back) ke dalam basis data graf untuk menghasilkan rekomendasi item yang relevan secara real-time.
 
-## 📌 Fitur Utama
+## Struktur Direktori
 
-- **Data Pipeline & Ingestion**: Pengolahan dataset RetailRocket dan *batch import* berbasis pola `FOREACH` Cypher ke Neo4j.
-- **Graph Indexing & Constraints**: Penerapan *unique constraints* pada simpul `:Visitor` dan `:Item` untuk efisiensi kueri.
-- **Vector Space Modelling (VSM)**: Proyeksi ruang vektor interaksi pengguna-produk (*User-Item*) dan *Item Co-occurrence*.
-- **Similarity Computation**: Perhitungan *Cosine Similarity* menggunakan Scikit-Learn dan penulisan kembali (*write back*) relasi `:SIMILAR` ke dalam database Neo4j.
-- **Graph-based Recommendation Engine**: Algoritma $k$-Nearest Neighbors (KNN) berbasis *Item-Item Collaborative Filtering*.
-- **Evaluation Metrics**: Evaluasi performa sistem rekomendasi menggunakan metrik **Hit@5** dan **NDCG@5**.
+* `README.md` : Berkas dokumentasi utama proyek.
+* `UTS GSD_Kevin Febrian W_025.ipynb` : Jupyter Notebook berisi alur kerja lengkap dari persiapan data, pembuatan graf di Neo4j, ekstraksi VSM, hingga evaluasi rekomendasi.
+* `events_filtered.zip` : Arsip dataset interaksi e-commerce yang telah difilter berdasarkan rentang waktu.
+* `requirements.txt` : Daftar dependensi pustaka Python yang diperlukan.
 
----
+## Prasyarat dan Lingkungan Kerja
 
-## 🛠️ Teknologi & Dependensi
+* Python 3.10 atau versi lebih baru
+* Neo4j Database Server (Local Instance Desktop atau Community Edition)
+* Protokol Bolt aktif pada port 7687
 
-* **Database**: Neo4j (Local Instance / Bolt Protocol)
-* **Language**: Python 3.12+
-* **Libraries**:
-  * `neo4j` (Official Python Driver 5.x)
-  * `pandas`, `numpy`
-  * `scipy` (Sparse Matrix Operations)
-  * `scikit-learn` (Cosine Similarity)
-  * `networkx`, `matplotlib` (Graph Visualization)
+## Panduan Instalasi dan Penggunaan
 
----
-
-## 📂 Struktur Repositori
-
-```text
-├── archive/                   # Dataset mentah RetailRocket (CSV)
-├── events_filtered.csv        # Dataset interaksi yang sudah difilter
-├── import_retailrocket.ipynb  # Main Jupyter Notebook (Modul 1.1 - 2.2)
-├── driver.py                  # Modul koneksi Neo4j Driver
-├── requirements.txt           # Daftar dependensi Python
-└── README.md                  # Dokumentasi Proyek
-
-```
-
----
-
-## 🚀 Panduan Memulai (*Quick Start*)
-
-### 1. Prasyarat System
-
-* **Neo4j Desktop / Server** sudah berjalan di lokal (`bolt://127.0.0.1:7687`).
-* Python versi 3.10 atau yang lebih baru.
-
-### 2. Setup Virtual Environment & Dependensi
-
-```bash
-# Clone repositori
-git clone [https://github.com/username/retailrocket-graph-analytics.git](https://github.com/username/retailrocket-graph-analytics.git)
-cd retailrocket-graph-analytics
-
-# Buat virtual environment
+1. Clone repositori ini ke direktori lokal:
+git clone [https://github.com/username/repository-name.git](https://github.com/username/repository-name.git)
+cd repository-name
+2. Ekstrak berkas dataset:
+Pastikan berkas `events_filtered.zip` diekstrak ke direktori utama sehingga menghasilkan berkas `events_filtered.csv`.
+3. Buat dan aktifkan lingkungan virtual:
 python -m venv .venv
-
-# Aktivasi virtual environment
-# Windows:
-.venv\Scripts\activate
-# Linux/MacOS:
-source .venv/bin/activate
-
-# Install dependensi
+source .venv/bin/activate  # Untuk Linux/macOS
+.venv\Scripts\activate     # Untuk Windows
+4. Pasang seluruh dependensi yang dibutuhkan:
 pip install -r requirements.txt
-
-```
-
-### 3. Konfigurasi Database
-
-Pastikan kredensial Neo4j pada notebook atau `driver.py` telah disesuaikan dengan instans lokal kamu:
-
-```python
+5. Pastikan layanan Neo4j telah berjalan dan sesuaikan kredensial koneksi (URI, Username, Password) di dalam berkas notebook:
 URI = "bolt://127.0.0.1:7687"
-AUTH = ("neo4j", "password_kamu")
+AUTH = ("neo4j", "password_anda")
+6. Buka dan jalankan berkas `UTS GSD_Kevin Febrian W_025.ipynb` secara berurutan menggunakan Jupyter Notebook atau VS Code.
 
-```
+## Metodologi dan Alur Kerja
 
----
+1. Ingesti Data dan Konstruksi Graf
+* Pembuatan simpul Visitor dan Item.
+* Pembentukan relasi interaksi: VIEWED, ADDED_TO_CART, dan BOUGHT.
+* Pembuatan indeks unik pada Visitor(visitorId) dan Item(itemId) untuk mengoptimalkan kinerja query Cypher.
 
-## 📊 Ringkasan Subgraph & Komposisi Data
 
-Setelah impor data dan pembersihan simpul residual, berikut adalah komposisi akhir jaringan di Neo4j:
+2. Pemodelan Ruang Vektor (VSM)
+* Konstruksi matriks interaksi User-Item.
+* Transpose matriks untuk mendapatkan VSM Item-Item.
+* Analisis keterpencilan matriks (Sparsity) dan visualisasi sub-graf menggunakan NetworkX.
 
-| Tipe Simpul (*Node*) | Total Nodes | Tipe Relasi (*Edge*) | Total Relations |
-| --- | --- | --- | --- |
-| **`Visitor`** | 804,234 | **`VIEWED`** | 4,443,520 |
-| **`Item`** | 183,860 | **`ADDED_TO_CART`** | 113,371 |
-|  |  | **`BOUGHT`** | 36,909 |
-|  |  | **`SIMILAR`** | 31 |
 
----
+3. Perhitungan Kesamaan dan Write-Back
+* Perhitungan Cosine Similarity pada simpul Item yang aktif.
+* Eliminasi nilai self-similarity pada diagonal utama.
+* Penulisan kembali pasangan item dengan skor kesamaan tertinggi ke basis data Neo4j menggunakan relasi :SIMILAR.
 
-## 📈 Metrik Evaluasi Sistem Rekomendasi
 
-Sistem rekomendasi diuji menggunakan strategi evaluasi berbasis temporal (P1 untuk *training* dan P2 untuk *testing*):
+4. Rekomendasi k-NN dan Evaluasi
+* Pengambilan item k-Nearest Neighbors berbasis relasi :SIMILAR.
+* Evaluasi performa sistem rekomendasi menggunakan metrik Hit@5 dan NDCG@5 pada split data pengujian.
 
-* **Hit@5**: Mengukur presisi ketersediaan minimal satu item relevan pada Top-5 rekomendasi.
-* **NDCG@5**: Mengukur efektivitas peringkat (*ranking quality*) item yang direkomendasikan.
 
----
 
-## 📝 Lisensi & Penulis
+## Hasil Evaluasi
 
-* **Penulis**: Kevin Febrian Widhiarta
-* **Program Studi**: Sains Data - Universitas Negeri Surabaya (UNESA)
-
-```
-
-```
+* Graf hasil proyeksi berhasil menyimpan keterhubungan antar-item secara efisien tanpa membebani kapasitas memori.
+* Metrik Hit@5 dan NDCG@5 mengonfirmasi bahwa pendekatan Item-Based Collaborative Filtering memberikan urutan rekomendasi yang presisi untuk pengguna aktif.
